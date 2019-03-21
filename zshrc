@@ -24,6 +24,17 @@ antigen theme https://github.com/caiogondim/bullet-train-oh-my-zsh-theme bullet-
 # Tell Antigen that you're done.
 antigen apply
 
+#BULLETTRAIN_KCTX_KCONFIG=$HOME/.kube/config
+BULLETTRAIN_PROMPT_ORDER=(
+  time
+  status
+  context
+  dir
+  go
+  git
+  cmd_exec_time
+)
+
 export TERM="xterm-256color"
 export PATH=$PATH:/usr/local/bin
 
