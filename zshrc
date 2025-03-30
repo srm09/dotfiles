@@ -1,75 +1,76 @@
-source $HOME/terminal/antigen.zsh
+# Basic ZSH Configuration
 
-# Load the oh-my-zsh's library.
-antigen use oh-my-zsh
+# History Configuration
+HISTFILE=~/.zsh_history
+HISTSIZE=10000
+SAVEHIST=10000
+setopt appendhistory
+setopt HIST_IGNORE_ALL_DUPS
+setopt HIST_SAVE_NO_DUPS
+setopt HIST_REDUCE_BLANKS
 
-# Bundles from the default repo (robbyrussell's oh-my-zsh).
-antigen bundle git
-antigen bundle heroku
-antigen bundle pip
-antigen bundle lein
-antigen bundle command-not-found
-antigen bundle kubectl
-antigen bundle last-working-dir
-antigen bundle web-search
-antigen bundle z
+# Basic auto/tab completion
+autoload -U compinit
+zstyle ':completion:*' menu select
+zmodload zsh/complist
+compinit
+_comp_options+=(globdots) # Include hidden files
 
-# Syntax highlighting bundle.
-antigen bundle zsh-users/zsh-syntax-highlighting
+# Basic prompt
+autoload -Uz vcs_info
+precmd() { vcs_info }
+zstyle ':vcs_info:git:*' formats '%b '
+setopt PROMPT_SUBST
+PROMPT='%F{green}%n@%m%f:%F{blue}%~%f %F{red}${vcs_info_msg_0_}%f$ '
 
-# Load the theme.
-#antigen theme robbyrussell
-antigen theme https://github.com/caiogondim/bullet-train-oh-my-zsh-theme bullet-train
+# Useful aliases
+alias ls='ls --color=auto'
+alias ll='ls -lah'
+alias grep='grep --color=auto'
+alias ..='cd ..'
+alias ...='cd ../..'
 
-# Tell Antigen that you're done.
-antigen apply
+# Basic key bindings
+bindkey -e  # Use emacs key bindings
+bindkey '^[[A' up-line-or-search
+bindkey '^[[B' down-line-or-search
+bindkey "^[[1;5C" forward-word
+bindkey "^[[1;5D" backward-word
 
-#BULLETTRAIN_KCTX_KCONFIG=$HOME/.kube/config
-BULLETTRAIN_PROMPT_ORDER=(
-  time
-  status
-  context
-  dir
-  go
-  git
-  cmd_exec_time
-)
+# Environment variables
+export EDITOR='vim'
+export VISUAL='vim'
+export PAGER='less'
+export LANG=en_US.UTF-8
 
-export TERM="xterm-256color"
-export PATH=$PATH:/usr/local/bin
+# Path modifications
+export PATH=$HOME/bin:/usr/local/bin:$PATH
 
-# Add golang to PATH
-export PATH=$PATH:/usr/local/go/bin
-export GOPATH=$HOME/go
-export PATH=$PATH:$GOPATH/bin
+# Basic color support
+autoload -U colors && colors
 
-# Setup rupa/z
-. /usr/local/etc/profile.d/z.sh
+# Directory stack
+setopt AUTO_PUSHD
+setopt PUSHD_IGNORE_DUPS
+setopt PUSHD_SILENT
 
-# Setup aliases
-alias cp='cp -iv'                           # Preferred 'cp' implementation
-alias mv='mv -iv'                           # Preferred 'mv' implementation
-alias mkdir='mkdir -pv'                     # Preferred 'mkdir' implementation
-alias ll='ls -FGlAhp'                       # Preferred 'ls' implementation
-alias less='less -FSRXc'                    # Preferred 'less' implementation
-#cd() { builtin cd "$@"; ll; }               # Always list directory contents upon 'cd'
-alias cd..='cd ../'                         # Go back 1 directory level (for fast typers)
-alias ..='cd ../'                           # Go back 1 directory level
-alias ...='cd ../../'                       # Go back 2 directory levels
-alias .3='cd ../../../'                     # Go back 3 directory levels
-alias .4='cd ../../../../'                  # Go back 4 directory levels
-alias .5='cd ../../../../../'               # Go back 5 directory levels
-alias .6='cd ../../../../../../'            # Go back 6 directory levels
-alias edit='code'                           # edit:         Opens any file in sublime editor
-alias f='open -a Finder ./'
-alias cls='clear'
-alias die='exit'
+# Basic correction
+setopt CORRECT
+setopt CORRECT_ALL
 
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/Users/muchhals/utils/google-cloud-sdk/path.zsh.inc' ]; then . '/Users/muchhals/utils/google-cloud-sdk/path.zsh.inc'; fi
+# Allow comments in interactive shell
+setopt INTERACTIVE_COMMENTS
 
-# The next line enables shell command completion for gcloud.
-if [ -f '/Users/muchhals/utils/google-cloud-sdk/completion.zsh.inc' ]; then . '/Users/muchhals/utils/google-cloud-sdk/completion.zsh.inc'; fi
+# Load additional custom configurations if they exist
+for config_file (~/.zsh/*.zsh(N)); do
+  source $config_file
+done
 
-# PKS related setup
-export PATH=$PATH:$HOME/workspace/pks-home/bin
+# Basic plugins (if you want to add them later)
+# This is where you'd source plugins like zsh-autosuggestions or zsh-syntax-highlighting
+
+PATH=$PATH:/opt/homebrew/bin
+export FPATH="/Users/sagar/eza/completions/zsh:$FPATH"
+
+# Init starship
+eval "$(starship init zsh)"
